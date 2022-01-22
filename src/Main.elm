@@ -40,7 +40,7 @@ type alias Model = {
 init : Model
 init = {
     array = [20, 15, 3, 7, 2, 1, 50, 25, 2],
-    iteration = 0,
+    iteration = 1,
     counter = 0,
     merge = False
     }
