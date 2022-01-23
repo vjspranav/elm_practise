@@ -1,2 +1,3 @@
-elm-stuff
-.vscode
+**/elm-stuff
+.vscode/*
+.DS_STORE
