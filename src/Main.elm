@@ -85,6 +85,13 @@ mergeSort arr i size =
             else 
                 (getSubList 1 i arr) ++ mergeSubList (getSubList i (i+size) arr) (getSubList (i+size) (i + size*2) arr) ++ getSubList (i+size*2) ((List.length arr) + 1) arr
 
+--List as string
+listToString arr =
+    case arr of
+        [] -> ""
+        (x::xs) -> 
+            if xs == [] then String.fromInt x
+            else String.fromInt x ++ ", " ++ listToString xs
 type Msg
   = Next
 
@@ -108,15 +115,23 @@ view model =
         array = model.array
         i = model.i
         size = model.size
-        change = if model.change then "Incremented size" else "No change"
+        change = 
+            if model.change then 
+                "Incremented size" 
+            else 
+                "Merging array " ++ String.fromInt i ++ ", " ++ String.fromInt (i + size - 1) ++ " and " ++ String.fromInt (i + size) ++ ", " ++ String.fromInt (i + size * 2 - 1) 
+        arr1 = getSubList i (i+size) model.array 
+        arr2 = getSubList (i+size) (i + size*2) model.array
+        mergeContent = "arr1: " ++ listToString arr1 ++ ", arr2: " ++ listToString arr2
     in
         -- Center the div
         -- Center horizontally
-        div [style "display" "flex", style "justify-content" "center", style "align-items" "center"]
-            [ div [] (display array)
-            , button [onClick Next] [text "Next"]
-            , div [] [text (String.fromInt size)]
-            , div [] [text (String.fromInt i)]
-            , div [] [text change]
+        div []
+            [ div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] (display array)
+            , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [button [onClick Next] [text "Next"]]
+            , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [text ("Size: " ++ (String.fromInt size))]
+            , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [text ("index: " ++ (String.fromInt i))]
+            , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [text change]
+            , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [text mergeContent]
             ]
             
