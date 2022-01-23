@@ -75,25 +75,7 @@ init =
 
 -- UPDATE
 
-
-getElement : Int -> List a -> Maybe a
-getElement n arr =
-    case arr of
-        [] ->
-            Nothing
-
-        x :: xs ->
-            if n == 0 then
-                Just x
-
-            else
-                getElement (n - 1) xs
-
-
-
 -- Function to get sublist
-
-
 getSubList f l arr =
     case arr of
         [] ->
