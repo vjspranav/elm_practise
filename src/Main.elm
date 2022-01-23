@@ -1,4 +1,5 @@
 module Main exposing (..)
+import Html exposing (Html, Attribute, div, input, text)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 
@@ -30,6 +31,7 @@ display model i size cur = case model of
      (x::xs) -> div [style "display" "inline-flex", style "padding" "10px", style "border" "1px solid black", style "background" (if ((cur >= i && cur < (i + size))) then "green" else if ((cur >= (i + size) && cur < (i + (size * 2)))) then "red" else if (cur < i) then "yellow" else "white")][ text (String.fromInt x)] :: display xs i size (cur+1)
 
 type alias Model = {
+    input: String,
     array: List Int,
     i: Int,
     size: Int,
@@ -39,6 +41,7 @@ type alias Model = {
 
 init : Model
 init = {
+    input = "",
     array = [20, 15, 7, 3, 2, 1, 50, 25, 2],
     i = 1,
     size = 1,
@@ -92,12 +95,25 @@ listToString arr =
         (x::xs) -> 
             if xs == [] then String.fromInt x
             else String.fromInt x ++ ", " ++ listToString xs
+
+-- List to int
+listStrToListInt arr =
+    case arr of
+        [] -> []
+        (x::xs) -> 
+            (String.toInt x) :: (listStrToListInt xs)
+
 type Msg
   = Next
+  | Change String
+  | Submit
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
+    Change newInput -> { model | input = newInput }
+    Submit ->
+        {model | input = model.input, array = List.map (\n -> (Maybe.withDefault 0 (String.toInt (String.trim n)))) (String.split "," model.input), i = 1, size = 1, change = False}
     Next ->
         if model.size > List.length model.array then
         model 
@@ -116,6 +132,8 @@ view model =
         i = model.i
         size = model.size
         change = 
+            if size > List.length array then "Sorted"
+            else
             if model.change then 
                 "Incremented size" 
             else 
@@ -128,16 +146,20 @@ view model =
     in
         -- Center the div
         -- Center horizontally
-        div []
-            [ div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] (display array i size 1)
-            , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [button [onClick Next] [text "Next"]]
-            , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [text ("Size: " ++ (String.fromInt size))]
-            , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [text ("index: " ++ (String.fromInt i))]
-            , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [text change]
-            , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] 
-                  [ div [style "display" "flex", style "justify-content" "center", style "align-items" "center", style "color" "green"] [text mergeContent1]
-                  , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [text mergeContent2]
-                  , div [style "display" "flex", style "justify-content" "center", style "align-items" "center", style "color" "red"] [text mergeContent3]
-                  ]
+        div [] 
+            [ Html.h1 [style "text-align" "center"] [text "Merge Sort"]
+            , div [style "margin" "15vh"]
+                [ div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [input [ style "height" "20px",  style "width" "250px", placeholder "Enter numbers separated with comma", value model.input, onInput Change ] [] ]
+                , div [style "display" "flex", style "justify-content" "center", style "align-items" "center", style "margin-bottom" "20px"] [button [onClick Submit] [text "Submit"]]
+                , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] (display array i size 1)
+                , div [style "display" "flex", style "justify-content" "center", style "align-items" "center", style "margin-bottom" "20px"] [button [onClick Next] [text "Next"]]
+                , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [text ("Size: " ++ (String.fromInt size))]
+                , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [text ("Index: " ++ (String.fromInt i))]
+                , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] 
+                    [ div [style "display" "flex", style "justify-content" "center", style "align-items" "center", style "color" "green"] [text mergeContent1]
+                    , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [text mergeContent2]
+                    , div [style "display" "flex", style "justify-content" "center", style "align-items" "center", style "color" "red"] [text mergeContent3]
+                    ]
+                , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [text change]
+                ]
             ]
-            
