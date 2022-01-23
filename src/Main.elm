@@ -24,10 +24,10 @@ main =
 
 
 -- MODEL
-display : List Int ->  List (Html div)
-display model = case model of
+display : List Int -> Int -> Int -> Int -> List (Html div)
+display model i size cur = case model of
      [] -> []
-     (x::xs) -> div [style "display" "inline-flex", style "padding" "10px", style "border" "1px solid black"][ text (String.fromInt x)] :: display xs
+     (x::xs) -> div [style "display" "inline-flex", style "padding" "10px", style "border" "1px solid black", style "background" (if ((cur >= i && cur < (i + size))) then "green" else if ((cur >= (i + size) && cur < (i + (size * 2)))) then "red" else if (cur < i) then "yellow" else "white")][ text (String.fromInt x)] :: display xs i size (cur+1)
 
 type alias Model = {
     array: List Int,
@@ -122,16 +122,22 @@ view model =
                 "Merging array " ++ String.fromInt i ++ ", " ++ String.fromInt (i + size - 1) ++ " and " ++ String.fromInt (i + size) ++ ", " ++ String.fromInt (i + size * 2 - 1) 
         arr1 = getSubList i (i+size) model.array 
         arr2 = getSubList (i+size) (i + size*2) model.array
-        mergeContent = "arr1: " ++ listToString arr1 ++ ", arr2: " ++ listToString arr2
+        mergeContent1 = "arr1: " ++ listToString arr1
+        mergeContent2 = "--,--"
+        mergeContent3 = " arr2: " ++ listToString arr2
     in
         -- Center the div
         -- Center horizontally
         div []
-            [ div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] (display array)
+            [ div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] (display array i size 1)
             , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [button [onClick Next] [text "Next"]]
             , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [text ("Size: " ++ (String.fromInt size))]
             , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [text ("index: " ++ (String.fromInt i))]
             , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [text change]
-            , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [text mergeContent]
+            , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] 
+                  [ div [style "display" "flex", style "justify-content" "center", style "align-items" "center", style "color" "green"] [text mergeContent1]
+                  , div [style "display" "flex", style "justify-content" "center", style "align-items" "center"] [text mergeContent2]
+                  , div [style "display" "flex", style "justify-content" "center", style "align-items" "center", style "color" "red"] [text mergeContent3]
+                  ]
             ]
             
