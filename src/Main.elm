@@ -31,27 +31,59 @@ display model = case model of
 
 type alias Model = {
     array: List Int,
-    iteration: Int,
-    counter: Int,
-    merge: Bool
+    i: Int,
+    size: Int,
+    change: Bool
     }
 
 
 init : Model
 init = {
-    array = [20, 15, 3, 7, 2, 1, 50, 25, 2],
-    iteration = 1,
-    counter = 0,
-    merge = False
+    array = [20, 15, 7, 3, 2, 1, 50, 25, 2],
+    i = 1,
+    size = 1,
+    change = False
     }
 
 -- UPDATE
-
+getElement : Int -> List a -> Maybe a
 getElement n arr =
-  if n == 1 then
-    (Maybe.withDefault 0 (List.head arr))
-  else 
-    getElement (n-1) (Maybe.withDefault [] (List.tail arr))
+  case arr of
+    [] -> Nothing
+    (x::xs) ->
+      if n == 0 then Just x
+      else getElement (n - 1) xs
+
+-- Function to get sublist
+getSubList f l arr = 
+    case arr of
+        [] -> []
+        (x::xs) -> 
+            if f == 1 then 
+                if l == 1 then [] 
+                else x :: getSubList f (l - 1) xs
+            else getSubList (f - 1) (l-1) xs
+
+-- Function to merge two sublists
+mergeSubList arr1 arr2 = 
+    case arr1 of
+        [] -> arr2
+        (x::xs) -> 
+            case arr2 of
+                [] -> arr1
+                (y::ys) -> 
+                    if x <= y then x :: mergeSubList xs arr2
+                    else y :: mergeSubList arr1 ys
+
+-- Function to merge
+mergeSort arr i size =
+    case arr of
+        [] -> []
+        [x] -> [x]
+        (x::xs) -> 
+            if i > List.length arr then arr
+            else 
+                (getSubList 1 i arr) ++ mergeSubList (getSubList i (i+size) arr) (getSubList (i+size) (i + size*2) arr) ++ getSubList (i+size*2) ((List.length arr) + 1) arr
 
 type Msg
   = Next
@@ -60,7 +92,13 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
     Next ->
-        { model | array = model.array, counter = (getElement (model.iteration) model.array), iteration = model.iteration + 1, merge = model.merge}
+        if model.size > List.length model.array then
+        model 
+        else
+            if model.i > List.length model.array then
+                {model | array = model.array, i = 1, size = model.size * 2, change=True}
+            else
+                {model | array = mergeSort model.array model.i model.size, i = model.i + (model.size * 2), size = model.size, change=False}
 
 -- VIEW
 
@@ -68,13 +106,17 @@ view : Model -> Html Msg
 view model =
     let
         array = model.array
-        counter = model.counter
+        i = model.i
+        size = model.size
+        change = if model.change then "Incremented size" else "No change"
     in
         -- Center the div
         -- Center horizontally
         div [style "display" "flex", style "justify-content" "center", style "align-items" "center"]
             [ div [] (display array)
             , button [onClick Next] [text "Next"]
-            , div [] [text (String.fromInt counter)]
+            , div [] [text (String.fromInt size)]
+            , div [] [text (String.fromInt i)]
+            , div [] [text change]
             ]
             
