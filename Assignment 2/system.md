@@ -13,7 +13,35 @@ We describe our program as a set of states and we move from one state to another
 
 X -F-> Y : Would Say action F is changing state X to Y.
 
-## Merge Sort as Iterative Transition System
+## Successively Refined Transisiton Systems.
+We have 4 systems which gradually take a user from giving him the freedom to control the experiment to making it trivial. The system design for each is discussed below.
+
+### Merge Sort with Manual Merge
+Our state(Modal) consists of  values array, larray, rarray, index, size, lsize, rsize  
+At any given point larray and rarray are themselves sorted.  
+User is given the options of left and right buttons.  
+Left button picks the smallest element from the left and Right button from the right anf places it in array.  
+User constinues to do so till the larray and rarray are empty.  
+Then we tell user whether he did it properly ot not.  
+
+### Merge Sort with Automatic Merge
+Our state(Modal) consists of  values array, larray, rarray, index, size, lsize, rsize  
+At any given point larray and rarray are themselves sorted.  
+User is given the options of next button.  
+On click of next button, the smaller of left and rigth is selected and placed into the array.  
+User constinues to do so till the larray and rarray are empty.  
+This will give the correct order of steps, as machine is selecting and there is little user intervention.  
+
+### Merge Sort as Manual Iterative System
+Our state(Modal) consists of 4 values array: List Int, index: Int, size: Int, change: Bool  
+We move from one State to another on our action **Next**.  
+On a single next our array tries to sort a pair of size elements.  
+size here is the number of elements that we divide before merging.  
+This size control is given to user and allowed to change and keep clicking next.  
+If the steps followed are wrong the array in the end won't be sorted and user will be informed the same.  
+
+### Merge Sort as Iterative Transition System
+This is the most trivial system
 Our state(Modal) consists of 4 values array: List Int, index: Int, size: Int, change: Bool  
 We move from one State to another on our action **Next**.  
 On a single next our state changes from one to another by one of the two functions:
