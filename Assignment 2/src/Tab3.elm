@@ -7,10 +7,10 @@ module Tab3 exposing (..)
 --
 
 import Browser
-import Html exposing (Attribute, Html, button, div, input, text, a, select, option)
+import Char exposing (toLower)
+import Html exposing (Attribute, Html, a, button, div, input, option, select, text)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Char exposing (toLower)
 
 
 
@@ -77,24 +77,32 @@ init =
 
 
 -- UPDATE
-
 -- Function to give power of 2 lower than n
+
+
 getPowerTwo_N : Int -> Int -> Int
-getPowerTwo_N n two = 
-    if ((two * 2) >= n)
-    then
-        two 
-    else 
-        getPowerTwo_N n (two * 2)        
+getPowerTwo_N n two =
+    if (two * 2) >= n then
+        two
+
+    else
+        getPowerTwo_N n (two * 2)
+
+
 
 -- Function that creates options for select
+
+
 getOptions : Int -> Int -> List (Html select)
-getOptions m n = 
-    if m >= n
-    then
+getOptions m n =
+    if m >= n then
         []
+
     else
         [ option [ value (String.fromInt m) ] [ text (String.fromInt m) ] ] ++ getOptions (m * 2) n
+
+
+
 -- Function to get sublist
 
 
@@ -201,8 +209,8 @@ update msg model =
             { model | input = newInput }
 
         Select newSelectInput ->
-            { model | select_input = newSelectInput, size = Maybe.withDefault 0 (String.toInt newSelectInput), i = 1, change = False}
-            
+            { model | select_input = newSelectInput, size = Maybe.withDefault 0 (String.toInt newSelectInput), i = 1, change = False }
+
         Submit ->
             { model | input = model.input, array = List.map (\n -> Maybe.withDefault 0 (String.toInt (String.trim n))) (String.split "," model.input), i = 1, size = 1, change = False }
 
@@ -236,12 +244,15 @@ view model =
         change =
             if model.change then
                 if size * 2 >= List.length array then
-                    if (array == List.sort array) then
-                        "Sorted" 
+                    if array == List.sort array then
+                        "Sorted"
+
                     else
-                        "Not sorted, Please try again" 
+                        "Not sorted, Please try again"
+
                 else
                     "All in this size done, Please increase split size"
+
             else
                 "Merging array " ++ String.fromInt i ++ ", " ++ String.fromInt (i + size - 1) ++ " and " ++ String.fromInt (i + size) ++ ", " ++ String.fromInt (i + size * 2 - 1)
 
@@ -267,17 +278,17 @@ view model =
 
         -- Three centered divs beside each other
         , div [ style "display" "flex", style "text-align" "center", style "justify-content" "center" ]
-            [ a [href "/tab1.html"] [button [ style "flex" "1", style "background-color" "#4CAF50", style "color" "white", style "padding" "14px 20px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Manual Merge" ]]
-            , a [href "/tab2.html"] [button [ style "flex" "1", style "background-color" "#4CAF50", style "color" "white", style "padding" "14px 20px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Automatic Merge Manual Iteration" ]]
+            [ a [ href "/tab1.html" ] [ button [ style "flex" "1", style "background-color" "#4CAF50", style "color" "white", style "padding" "14px 20px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Manual Merge" ] ]
+            , a [ href "/tab2.html" ] [ button [ style "flex" "1", style "background-color" "#4CAF50", style "color" "white", style "padding" "14px 20px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Automatic Merge Manual Iteration" ] ]
             , button [ style "flex" "1", style "background-color" "#4CADE0", style "color" "white", style "padding" "14px 20px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Manual Iterative Merge Sort" ]
-            , a [href "/tab4.html"] [button [ style "flex" "1", style "background-color" "#4CAF50", style "color" "white", style "padding" "14px 20px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Iterative Merge Sort" ]]
+            , a [ href "/tab4.html" ] [ button [ style "flex" "1", style "background-color" "#4CAF50", style "color" "white", style "padding" "14px 20px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Iterative Merge Sort" ] ]
             ]
         , div [ style "margin" "15vh" ]
             [ div [ style "display" "flex", style "justify-content" "center", style "align-items" "center" ] [ input [ style "height" "20px", style "width" "250px", placeholder "Enter numbers separated with comma", value model.input, onInput Change ] [] ]
             , div [ style "display" "flex", style "justify-content" "center", style "align-items" "center", style "margin-bottom" "20px" ] [ button [ onClick Submit ] [ text "Submit" ] ]
             , div [ style "display" "flex", style "text-align" "center", style "justify-content" "center" ]
                 [ div [ style "padding" "14px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Split Size ->" ]
-                , div [ style "display" "flex", style "justify-content" "center", style "align-items" "center" ] [ select [value model.select_input, onInput Select] (getOptions 1 (List.length array)) ]
+                , div [ style "display" "flex", style "justify-content" "center", style "align-items" "center" ] [ select [ value model.select_input, onInput Select ] (getOptions 1 (List.length array)) ]
                 ]
             , div [ style "display" "flex", style "justify-content" "center", style "align-items" "center" ] (display array i size 1)
             , div [ style "display" "flex", style "justify-content" "center", style "align-items" "center", style "margin-bottom" "20px" ] [ button [ onClick Next ] [ text "Next" ] ]

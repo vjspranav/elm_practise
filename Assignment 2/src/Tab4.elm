@@ -7,7 +7,7 @@ module Tab4 exposing (..)
 --
 
 import Browser
-import Html exposing (Attribute, Html, button, div, input, text, a)
+import Html exposing (Attribute, Html, a, button, div, input, text)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 
@@ -240,9 +240,9 @@ view model =
 
         -- Three centered divs beside each other
         , div [ style "display" "flex", style "text-align" "center", style "justify-content" "center" ]
-            [ a [href "/tab1.html"] [button [ style "flex" "1", style "background-color" "#4CAF50", style "color" "white", style "padding" "14px 20px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Manual Merge" ]]
-            , a [href "/tab2.html"] [button [ style "flex" "1", style "background-color" "#4CAF50", style "color" "white", style "padding" "14px 20px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Automatic Merge Manual Iteration" ]]
-            , a [href "/tab3.html"] [button [ style "flex" "1", style "background-color" "#4CAF50", style "color" "white", style "padding" "14px 20px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Manual Iterative Merge Sort" ]]
+            [ a [ href "/tab1.html" ] [ button [ style "flex" "1", style "background-color" "#4CAF50", style "color" "white", style "padding" "14px 20px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Manual Merge" ] ]
+            , a [ href "/tab2.html" ] [ button [ style "flex" "1", style "background-color" "#4CAF50", style "color" "white", style "padding" "14px 20px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Automatic Merge Manual Iteration" ] ]
+            , a [ href "/tab3.html" ] [ button [ style "flex" "1", style "background-color" "#4CAF50", style "color" "white", style "padding" "14px 20px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Manual Iterative Merge Sort" ] ]
             , button [ style "flex" "1", style "background-color" "#4CADE0", style "color" "white", style "padding" "14px 20px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Iterative Merge Sort" ]
             ]
         , div [ style "margin" "15vh" ]
