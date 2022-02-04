@@ -4456,6 +4456,7 @@ var $author$project$Tab3$init = {
 	change: false,
 	i: 1,
 	input: '',
+	select_input: '1',
 	size: 1
 };
 var $elm$core$Result$Err = function (a) {
@@ -5282,6 +5283,19 @@ var $author$project$Tab3$update = F2(
 				return _Utils_update(
 					model,
 					{input: newInput});
+			case 'Select':
+				var newSelectInput = msg.a;
+				return _Utils_update(
+					model,
+					{
+						change: false,
+						i: 1,
+						select_input: newSelectInput,
+						size: A2(
+							$elm$core$Maybe$withDefault,
+							0,
+							$elm$core$String$toInt(newSelectInput))
+					});
 			case 'Submit':
 				return _Utils_update(
 					model,
@@ -5308,7 +5322,7 @@ var $author$project$Tab3$update = F2(
 					model.i,
 					$elm$core$List$length(model.array)) > 0) ? _Utils_update(
 					model,
-					{array: model.array, change: true, i: 1, size: model.size * 2}) : _Utils_update(
+					{array: model.array, change: true, size: model.size}) : _Utils_update(
 					model,
 					{
 						array: A3($author$project$Tab3$mergeSort, model.array, model.i, model.size),
@@ -5322,6 +5336,9 @@ var $author$project$Tab3$Change = function (a) {
 	return {$: 'Change', a: a};
 };
 var $author$project$Tab3$Next = {$: 'Next'};
+var $author$project$Tab3$Select = function (a) {
+	return {$: 'Select', a: a};
+};
 var $author$project$Tab3$Submit = {$: 'Submit'};
 var $elm$html$Html$a = _VirtualDom_node('a');
 var $elm$html$Html$button = _VirtualDom_node('button');
@@ -5360,7 +5377,7 @@ var $author$project$Tab3$display = F4(
 				A4($author$project$Tab3$display, xs, i, size, cur + 1));
 		}
 	});
-var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $elm$html$Html$option = _VirtualDom_node('option');
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -5369,6 +5386,28 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			key,
 			$elm$json$Json$Encode$string(string));
 	});
+var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
+var $author$project$Tab3$getOptions = F2(
+	function (m, n) {
+		return (_Utils_cmp(m, n) > -1) ? _List_Nil : _Utils_ap(
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$option,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$value(
+							$elm$core$String$fromInt(m))
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							$elm$core$String$fromInt(m))
+						]))
+				]),
+			A2($author$project$Tab3$getOptions, m * 2, n));
+	});
+var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$Attributes$href = function (url) {
 	return A2(
 		$elm$html$Html$Attributes$stringProperty,
@@ -5436,15 +5475,21 @@ var $elm$html$Html$Events$onInput = function (tagger) {
 			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
 };
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
-var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
+var $elm$html$Html$select = _VirtualDom_node('select');
+var $elm$core$List$sortBy = _List_sortBy;
+var $elm$core$List$sort = function (xs) {
+	return A2($elm$core$List$sortBy, $elm$core$Basics$identity, xs);
+};
 var $author$project$Tab3$view = function (model) {
 	var size = model.size;
 	var mergeContent2 = '--,--';
 	var i = model.i;
 	var array = model.array;
-	var change = (_Utils_cmp(
-		size,
-		$elm$core$List$length(array)) > 0) ? 'Sorted' : (model.change ? 'Incremented size' : ('Merging array ' + ($elm$core$String$fromInt(i) + (', ' + ($elm$core$String$fromInt((i + size) - 1) + (' and ' + ($elm$core$String$fromInt(i + size) + (', ' + $elm$core$String$fromInt((i + (size * 2)) - 1)))))))));
+	var change = model.change ? ((_Utils_cmp(
+		size * 2,
+		$elm$core$List$length(array)) > -1) ? (_Utils_eq(
+		array,
+		$elm$core$List$sort(array)) ? 'Sorted' : 'Not sorted, Please try again') : 'All in this size done, Please increase split size') : ('Merging array ' + ($elm$core$String$fromInt(i) + (', ' + ($elm$core$String$fromInt((i + size) - 1) + (' and ' + ($elm$core$String$fromInt(i + size) + (', ' + $elm$core$String$fromInt((i + (size * 2)) - 1))))))));
 	var arr2 = A3($author$project$Tab3$getSubList, i + size, i + (size * 2), model.array);
 	var mergeContent3 = ' arr2: ' + $author$project$Tab3$listToString(arr2);
 	var arr1 = A3($author$project$Tab3$getSubList, i, i + size, model.array);
@@ -5624,6 +5669,52 @@ var $author$project$Tab3$view = function (model) {
 						_List_fromArray(
 							[
 								A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+								A2($elm$html$Html$Attributes$style, 'text-align', 'center'),
+								A2($elm$html$Html$Attributes$style, 'justify-content', 'center')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										A2($elm$html$Html$Attributes$style, 'padding', '14px'),
+										A2($elm$html$Html$Attributes$style, 'margin', '8px 1px'),
+										A2($elm$html$Html$Attributes$style, 'border', 'none'),
+										A2($elm$html$Html$Attributes$style, 'cursor', 'pointer')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Split Size ->')
+									])),
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+										A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+										A2($elm$html$Html$Attributes$style, 'align-items', 'center')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$select,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$value(model.select_input),
+												$elm$html$Html$Events$onInput($author$project$Tab3$Select)
+											]),
+										A2(
+											$author$project$Tab3$getOptions,
+											1,
+											$elm$core$List$length(array)))
+									]))
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								A2($elm$html$Html$Attributes$style, 'display', 'flex'),
 								A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
 								A2($elm$html$Html$Attributes$style, 'align-items', 'center')
 							]),
@@ -5649,6 +5740,18 @@ var $author$project$Tab3$view = function (model) {
 									[
 										$elm$html$Html$text('Next')
 									]))
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+								A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+								A2($elm$html$Html$Attributes$style, 'align-items', 'center')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('In this system we will get a chance to select a size and do merges of that size, Please select a size from drop down and keep clicking next.')
 							])),
 						A2(
 						$elm$html$Html$div,

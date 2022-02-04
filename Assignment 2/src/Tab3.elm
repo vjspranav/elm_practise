@@ -7,9 +7,10 @@ module Tab3 exposing (..)
 --
 
 import Browser
-import Html exposing (Attribute, Html, button, div, input, text, a)
+import Html exposing (Attribute, Html, button, div, input, text, a, select, option)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Char exposing (toLower)
 
 
 
@@ -55,6 +56,7 @@ display model i size cur =
 
 type alias Model =
     { input : String
+    , select_input : String
     , array : List Int
     , i : Int
     , size : Int
@@ -65,6 +67,7 @@ type alias Model =
 init : Model
 init =
     { input = ""
+    , select_input = "1"
     , array = [ 20, 15, 7, 3, 2, 1, 50, 25, 2 ]
     , i = 1
     , size = 1
@@ -74,6 +77,24 @@ init =
 
 
 -- UPDATE
+
+-- Function to give power of 2 lower than n
+getPowerTwo_N : Int -> Int -> Int
+getPowerTwo_N n two = 
+    if ((two * 2) >= n)
+    then
+        two 
+    else 
+        getPowerTwo_N n (two * 2)        
+
+-- Function that creates options for select
+getOptions : Int -> Int -> List (Html select)
+getOptions m n = 
+    if m >= n
+    then
+        []
+    else
+        [ option [ value (String.fromInt m) ] [ text (String.fromInt m) ] ] ++ getOptions (m * 2) n
 -- Function to get sublist
 
 
@@ -169,6 +190,7 @@ listStrToListInt arr =
 type Msg
     = Next
     | Change String
+    | Select String
     | Submit
 
 
@@ -178,6 +200,9 @@ update msg model =
         Change newInput ->
             { model | input = newInput }
 
+        Select newSelectInput ->
+            { model | select_input = newSelectInput, size = Maybe.withDefault 0 (String.toInt newSelectInput), i = 1, change = False}
+            
         Submit ->
             { model | input = model.input, array = List.map (\n -> Maybe.withDefault 0 (String.toInt (String.trim n))) (String.split "," model.input), i = 1, size = 1, change = False }
 
@@ -186,7 +211,7 @@ update msg model =
                 model
 
             else if model.i > List.length model.array then
-                { model | array = model.array, i = 1, size = model.size * 2, change = True }
+                { model | array = model.array, size = model.size, change = True }
 
             else
                 { model | array = mergeSort model.array model.i model.size, i = model.i + (model.size * 2), size = model.size, change = False }
@@ -209,12 +234,14 @@ view model =
             model.size
 
         change =
-            if size > List.length array then
-                "Sorted"
-
-            else if model.change then
-                "Incremented size"
-
+            if model.change then
+                if size * 2 >= List.length array then
+                    if (array == List.sort array) then
+                        "Sorted" 
+                    else
+                        "Not sorted, Please try again" 
+                else
+                    "All in this size done, Please increase split size"
             else
                 "Merging array " ++ String.fromInt i ++ ", " ++ String.fromInt (i + size - 1) ++ " and " ++ String.fromInt (i + size) ++ ", " ++ String.fromInt (i + size * 2 - 1)
 
@@ -248,8 +275,13 @@ view model =
         , div [ style "margin" "15vh" ]
             [ div [ style "display" "flex", style "justify-content" "center", style "align-items" "center" ] [ input [ style "height" "20px", style "width" "250px", placeholder "Enter numbers separated with comma", value model.input, onInput Change ] [] ]
             , div [ style "display" "flex", style "justify-content" "center", style "align-items" "center", style "margin-bottom" "20px" ] [ button [ onClick Submit ] [ text "Submit" ] ]
+            , div [ style "display" "flex", style "text-align" "center", style "justify-content" "center" ]
+                [ div [ style "padding" "14px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Split Size ->" ]
+                , div [ style "display" "flex", style "justify-content" "center", style "align-items" "center" ] [ select [value model.select_input, onInput Select] (getOptions 1 (List.length array)) ]
+                ]
             , div [ style "display" "flex", style "justify-content" "center", style "align-items" "center" ] (display array i size 1)
             , div [ style "display" "flex", style "justify-content" "center", style "align-items" "center", style "margin-bottom" "20px" ] [ button [ onClick Next ] [ text "Next" ] ]
+            , div [ style "display" "flex", style "justify-content" "center", style "align-items" "center" ] [ text "In this system we will get a chance to select a size and do merges of that size, Please select a size from drop down and keep clicking next." ]
             , div [ style "display" "flex", style "justify-content" "center", style "align-items" "center" ] [ text ("Size: " ++ String.fromInt size) ]
             , div [ style "display" "flex", style "justify-content" "center", style "align-items" "center" ] [ text ("Index: " ++ String.fromInt i) ]
             , div [ style "display" "flex", style "justify-content" "center", style "align-items" "center" ]
