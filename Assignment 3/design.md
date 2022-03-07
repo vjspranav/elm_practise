@@ -40,3 +40,8 @@ Controller here is the main working system, which is invoked when user presses n
   * If all merge units have not merged the arrays succesfuuly after sorting, do nothing.
 ### Merge Unit 
 Merge Units have two booleans mu_sorted, mu_merged, which tell us about their status. Each merge unit also has a sub array which we merge independently and which helps in the parallel processing here, which can work independently. 
+Merge unit has two functions mainly
+* Sort: Sorts the array using merge sort (assuming that all sub arrays of length size/2 are sorted by nature of the algorithm), and sets mu_sorted as True. This booleans give signal to next that this particular merge unit has the array sorted, we add sanity checks here by checking boolean and not doing any action if boolean is true. 
+* Merge: Merges the sorted sub array to the original parent array and sets mu_merged as True. This booleans give signal to next that this particular merge unit has the array merged and has completyed execution, we add sanity checks here by checking boolean and not doing any action if boolean is true. 
+
+Repeatedly performing this allows for parrallely doing merges through different systems and then merging them independntly for a given size. this is the basis of the algorithm followed.
