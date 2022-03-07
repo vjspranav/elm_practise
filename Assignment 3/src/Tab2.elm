@@ -434,7 +434,7 @@ view model =
 
         -- Three centered divs beside each other
         , div [ style "display" "flex", style "text-align" "center", style "justify-content" "center" ]
-            [ a [ href "/tab1.html" ] [ button [ style "flex" "1", style "background-color" "#4CAF50", style "color" "white", style "padding" "14px 20px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Merge Sort" ] ]
+            [ a [ href "/parallel/tab1.html" ] [ button [ style "flex" "1", style "background-color" "#4CAF50", style "color" "white", style "padding" "14px 20px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Merge Sort" ] ]
             , button [ style "flex" "1", style "background-color" "#4CADE0", style "color" "white", style "padding" "14px 20px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Parallel Merge Sort" ]
             ]
         , div [ style "margin" "15vh" ]

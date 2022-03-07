@@ -369,7 +369,7 @@ view model =
         -- Three centered divs beside each other
         , div [ style "display" "flex", style "text-align" "center", style "justify-content" "center" ]
             [ button [ style "flex" "1", style "background-color" "#4CADE0", style "color" "white", style "padding" "14px 20px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Merge Sort" ]
-            , a [ href "/tab2.html" ] [ button [ style "flex" "1", style "background-color" "#4CAF50", style "color" "white", style "padding" "14px 20px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Parallel Merge Sort" ] ]
+            , a [ href "/parallel/tab2.html" ] [ button [ style "flex" "1", style "background-color" "#4CAF50", style "color" "white", style "padding" "14px 20px", style "margin" "8px 1px", style "border" "none", style "cursor" "pointer" ] [ text "Parallel Merge Sort" ] ]
             ]
         , div [ style "margin" "15vh" ]
             [ div [ style "display" "flex", style "justify-content" "center", style "align-items" "center" ] [ input [ style "height" "20px", style "width" "250px", placeholder "Enter numbers separated with comma", value model.input, onInput Change ] [] ]
