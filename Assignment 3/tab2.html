@@ -4450,13 +4450,23 @@ var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
 var $elm$core$Basics$False = {$: 'False'};
+var $elm$core$Basics$True = {$: 'True'};
 var $author$project$Tab2$init = {
 	array: _List_fromArray(
 		[20, 15, 7, 3, 2, 1, 50, 25, 2]),
 	change: false,
 	i: 1,
 	input: '',
-	size: 1
+	j: 1,
+	mergeUnit1: _List_Nil,
+	mergeUnit2: _List_Nil,
+	mu1_merge: true,
+	mu1_sort: true,
+	mu2_merge: true,
+	mu2_sort: true,
+	size: 1,
+	trajectory: _List_fromArray(
+		['Start Array: 20, 15, 7, 3, 2, 1, 50, 25, 2'])
 };
 var $elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
@@ -4844,7 +4854,6 @@ var $elm$core$Array$initialize = F2(
 			return A5($elm$core$Array$initializeHelp, fn, initialFromIndex, len, _List_Nil, tail);
 		}
 	});
-var $elm$core$Basics$True = {$: 'True'};
 var $elm$core$Result$isOk = function (result) {
 	if (result.$ === 'Ok') {
 		return true;
@@ -5187,6 +5196,14 @@ var $elm$browser$Browser$sandbox = function (impl) {
 			view: impl.view
 		});
 };
+var $elm$core$List$append = F2(
+	function (xs, ys) {
+		if (!ys.b) {
+			return xs;
+		} else {
+			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
+		}
+	});
 var $author$project$Tab2$getSubList = F3(
 	function (f, l, arr) {
 		getSubList:
@@ -5213,6 +5230,15 @@ var $author$project$Tab2$getSubList = F3(
 			}
 		}
 	});
+var $author$project$Tab2$listToString = function (arr) {
+	if (!arr.b) {
+		return '';
+	} else {
+		var x = arr.a;
+		var xs = arr.b;
+		return _Utils_eq(xs, _List_Nil) ? $elm$core$String$fromInt(x) : ($elm$core$String$fromInt(x) + (', ' + $author$project$Tab2$listToString(xs)));
+	}
+};
 var $author$project$Tab2$mergeSubList = F2(
 	function (arr1, arr2) {
 		if (!arr1.b) {
@@ -5235,36 +5261,40 @@ var $author$project$Tab2$mergeSubList = F2(
 			}
 		}
 	});
-var $author$project$Tab2$mergeSort = F3(
-	function (arr, i, size) {
-		if (!arr.b) {
+var $elm$core$String$trim = _String_trim;
+var $author$project$Tab2$updateArray = F4(
+	function (arr1, arr2, f, l) {
+		if (!arr1.b) {
 			return _List_Nil;
 		} else {
-			if (!arr.b.b) {
-				var x = arr.a;
-				return _List_fromArray(
-					[x]);
+			var x = arr1.a;
+			var xs = arr1.b;
+			if (f > 1) {
+				return A2(
+					$elm$core$List$cons,
+					x,
+					A4($author$project$Tab2$updateArray, xs, arr2, f - 1, l - 1));
 			} else {
-				var x = arr.a;
-				var xs = arr.b;
-				return (_Utils_cmp(
-					i,
-					$elm$core$List$length(arr)) > 0) ? arr : _Utils_ap(
-					A3($author$project$Tab2$getSubList, 1, i, arr),
-					_Utils_ap(
-						A2(
-							$author$project$Tab2$mergeSubList,
-							A3($author$project$Tab2$getSubList, i, i + size, arr),
-							A3($author$project$Tab2$getSubList, i + size, i + (size * 2), arr)),
-						A3(
-							$author$project$Tab2$getSubList,
-							i + (size * 2),
-							$elm$core$List$length(arr) + 1,
-							arr)));
+				if (l > 0) {
+					if (!arr2.b) {
+						return _List_Nil;
+					} else {
+						var y = arr2.a;
+						var ys = arr2.b;
+						return (!l) ? _List_Nil : A2(
+							$elm$core$List$cons,
+							y,
+							A4($author$project$Tab2$updateArray, xs, ys, f - 1, l - 1));
+					}
+				} else {
+					return A2(
+						$elm$core$List$cons,
+						x,
+						A4($author$project$Tab2$updateArray, xs, arr2, 1, 0));
+				}
 			}
 		}
 	});
-var $elm$core$String$trim = _String_trim;
 var $elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
 		if (maybe.$ === 'Just') {
@@ -5299,29 +5329,211 @@ var $author$project$Tab2$update = F2(
 						change: false,
 						i: 1,
 						input: model.input,
-						size: 1
+						size: 1,
+						trajectory: A2(
+							$elm$core$List$append,
+							model.trajectory,
+							_List_fromArray(
+								[
+									'Initial array is ' + $author$project$Tab2$listToString(model.array)
+								]))
 					});
-			default:
-				return (_Utils_cmp(
+			case 'Next':
+				return ((_Utils_cmp(
 					model.size,
-					$elm$core$List$length(model.array)) > 0) ? model : ((_Utils_cmp(
+					$elm$core$List$length(model.array)) > 0) || ((!model.mu1_merge) || (!model.mu2_merge))) ? _Utils_update(
+					model,
+					{
+						trajectory: A2(
+							$elm$core$List$append,
+							model.trajectory,
+							_List_fromArray(
+								['Next: clicked but Merge unit 1 or 2 is not merged']))
+					}) : ((_Utils_cmp(
 					model.i,
 					$elm$core$List$length(model.array)) > 0) ? _Utils_update(
 					model,
-					{array: model.array, change: true, i: 1, size: model.size * 2}) : _Utils_update(
+					{
+						array: model.array,
+						change: true,
+						i: 1,
+						size: model.size * 2,
+						trajectory: A2(
+							$elm$core$List$append,
+							model.trajectory,
+							_List_fromArray(
+								[
+									'Next: clicked index is reset to 1 and size is now ' + $elm$core$String$fromInt(model.size * 2)
+								]))
+					}) : _Utils_update(
 					model,
 					{
-						array: A3($author$project$Tab2$mergeSort, model.array, model.i, model.size),
 						change: false,
-						i: model.i + (model.size * 2),
-						size: model.size
+						i: model.i,
+						j: model.i + (model.size * 2),
+						mergeUnit1: A3($author$project$Tab2$getSubList, model.i, (model.size * 2) + model.i, model.array),
+						mergeUnit2: A3($author$project$Tab2$getSubList, model.i + (model.size * 2), (model.size * 2) + (model.i + (model.size * 2)), model.array),
+						mu1_merge: (!$elm$core$List$length(
+							A3($author$project$Tab2$getSubList, model.i, (model.size * 2) + model.i, model.array))) ? true : false,
+						mu1_sort: (!$elm$core$List$length(
+							A3($author$project$Tab2$getSubList, model.i, (model.size * 2) + model.i, model.array))) ? true : false,
+						mu2_merge: (!$elm$core$List$length(
+							A3($author$project$Tab2$getSubList, model.i + (model.size * 2), (model.size * 2) + (model.i + (model.size * 2)), model.array))) ? true : false,
+						mu2_sort: (!$elm$core$List$length(
+							A3($author$project$Tab2$getSubList, model.i + (model.size * 2), (model.size * 2) + (model.i + (model.size * 2)), model.array))) ? true : false,
+						size: model.size,
+						trajectory: A2(
+							$elm$core$List$append,
+							model.trajectory,
+							_List_fromArray(
+								[
+									'Next: Merge unit 1 is ' + ($author$project$Tab2$listToString(
+									A3($author$project$Tab2$getSubList, model.i, (model.size * 2) + model.i, model.array)) + (', Merge unit 2 is ' + $author$project$Tab2$listToString(
+									A3($author$project$Tab2$getSubList, model.i + (model.size * 2), (model.size * 2) + (model.i + (model.size * 2)), model.array))))
+								]))
 					}));
+			case 'Sort1':
+				return model.mu1_sort ? _Utils_update(
+					model,
+					{
+						trajectory: A2(
+							$elm$core$List$append,
+							model.trajectory,
+							_List_fromArray(
+								['Sort: clicked but Merge unit 1 is already sorted']))
+					}) : _Utils_update(
+					model,
+					{
+						mergeUnit1: A2(
+							$author$project$Tab2$mergeSubList,
+							A3($author$project$Tab2$getSubList, 1, model.size + 1, model.mergeUnit1),
+							A3($author$project$Tab2$getSubList, model.size + 1, (model.size * 2) + 1, model.mergeUnit1)),
+						mu1_merge: false,
+						mu1_sort: true,
+						trajectory: A2(
+							$elm$core$List$append,
+							model.trajectory,
+							_List_fromArray(
+								[
+									'Sort: Merge unit 1 is sorted:' + $author$project$Tab2$listToString(
+									A2(
+										$author$project$Tab2$mergeSubList,
+										A3($author$project$Tab2$getSubList, 1, model.size + 1, model.mergeUnit1),
+										A3($author$project$Tab2$getSubList, model.size + 1, (model.size * 2) + 1, model.mergeUnit1)))
+								]))
+					});
+			case 'Merge1':
+				return model.mu1_merge ? _Utils_update(
+					model,
+					{
+						trajectory: A2(
+							$elm$core$List$append,
+							model.trajectory,
+							_List_fromArray(
+								['Merge: clicked but Merge unit 1 is already merged']))
+					}) : _Utils_update(
+					model,
+					{
+						array: A4(
+							$author$project$Tab2$updateArray,
+							model.array,
+							model.mergeUnit1,
+							model.i,
+							$elm$core$List$length(model.mergeUnit1) + (model.i - 1)),
+						i: model.i + (model.size * 2),
+						mergeUnit1: _List_Nil,
+						mu1_merge: true,
+						mu1_sort: true,
+						trajectory: A2(
+							$elm$core$List$append,
+							model.trajectory,
+							_List_fromArray(
+								[
+									'Merge: Merge unit 1 is merged, array is: ' + $author$project$Tab2$listToString(
+									A4(
+										$author$project$Tab2$updateArray,
+										model.array,
+										model.mergeUnit1,
+										model.i,
+										$elm$core$List$length(model.mergeUnit1) + (model.i - 1)))
+								]))
+					});
+			case 'Sort2':
+				return model.mu2_sort ? _Utils_update(
+					model,
+					{
+						trajectory: A2(
+							$elm$core$List$append,
+							model.trajectory,
+							_List_fromArray(
+								['Sort: clicked but Merge unit 2 is already sorted']))
+					}) : _Utils_update(
+					model,
+					{
+						mergeUnit2: A2(
+							$author$project$Tab2$mergeSubList,
+							A3($author$project$Tab2$getSubList, 1, model.size + 1, model.mergeUnit2),
+							A3($author$project$Tab2$getSubList, model.size + 1, (model.size * 2) + 1, model.mergeUnit2)),
+						mu2_merge: false,
+						mu2_sort: true,
+						trajectory: A2(
+							$elm$core$List$append,
+							model.trajectory,
+							_List_fromArray(
+								[
+									'Sort: Merge unit 2 is sorted:' + $author$project$Tab2$listToString(
+									A2(
+										$author$project$Tab2$mergeSubList,
+										A3($author$project$Tab2$getSubList, 1, model.size + 1, model.mergeUnit2),
+										A3($author$project$Tab2$getSubList, model.size + 1, (model.size * 2) + 1, model.mergeUnit2)))
+								]))
+					});
+			default:
+				return model.mu2_merge ? _Utils_update(
+					model,
+					{
+						trajectory: A2(
+							$elm$core$List$append,
+							model.trajectory,
+							_List_fromArray(
+								['Merge: clicked but Merge unit 2 is already merged']))
+					}) : _Utils_update(
+					model,
+					{
+						array: A4(
+							$author$project$Tab2$updateArray,
+							model.array,
+							model.mergeUnit2,
+							model.j,
+							$elm$core$List$length(model.mergeUnit2) + (model.j - 1)),
+						i: model.i + (model.size * 2),
+						mergeUnit2: _List_Nil,
+						mu2_merge: true,
+						mu2_sort: true,
+						trajectory: A2(
+							$elm$core$List$append,
+							model.trajectory,
+							_List_fromArray(
+								[
+									'Merge: Merge unit 2 is merged, array is: ' + $author$project$Tab2$listToString(
+									A4(
+										$author$project$Tab2$updateArray,
+										model.array,
+										model.mergeUnit2,
+										model.j,
+										$elm$core$List$length(model.mergeUnit2) + (model.j - 1)))
+								]))
+					});
 		}
 	});
 var $author$project$Tab2$Change = function (a) {
 	return {$: 'Change', a: a};
 };
+var $author$project$Tab2$Merge1 = {$: 'Merge1'};
+var $author$project$Tab2$Merge2 = {$: 'Merge2'};
 var $author$project$Tab2$Next = {$: 'Next'};
+var $author$project$Tab2$Sort1 = {$: 'Sort1'};
+var $author$project$Tab2$Sort2 = {$: 'Sort2'};
 var $author$project$Tab2$Submit = {$: 'Submit'};
 var $elm$html$Html$a = _VirtualDom_node('a');
 var $elm$html$Html$button = _VirtualDom_node('button');
@@ -5360,6 +5572,55 @@ var $author$project$Tab2$display = F4(
 				A4($author$project$Tab2$display, xs, i, size, cur + 1));
 		}
 	});
+var $author$project$Tab2$display_nocolor = function (model) {
+	if (!model.b) {
+		return _List_Nil;
+	} else {
+		var x = model.a;
+		var xs = model.b;
+		return A2(
+			$elm$core$List$cons,
+			A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						A2($elm$html$Html$Attributes$style, 'display', 'inline-flex'),
+						A2($elm$html$Html$Attributes$style, 'padding', '10px'),
+						A2($elm$html$Html$Attributes$style, 'border', '1px solid black')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text(
+						$elm$core$String$fromInt(x))
+					])),
+			$author$project$Tab2$display_nocolor(xs));
+	}
+};
+var $author$project$Tab2$display_nocolor_string = function (model) {
+	if (!model.b) {
+		return _List_Nil;
+	} else {
+		var x = model.a;
+		var xs = model.b;
+		return A2(
+			$elm$core$List$cons,
+			A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						A2($elm$html$Html$Attributes$style, 'padding', '10px'),
+						A2($elm$html$Html$Attributes$style, 'border', '1px solid black'),
+						A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+						A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+						A2($elm$html$Html$Attributes$style, 'align-items', 'center')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text(x)
+					])),
+			$author$project$Tab2$display_nocolor_string(xs));
+	}
+};
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
@@ -5376,15 +5637,6 @@ var $elm$html$Html$Attributes$href = function (url) {
 		_VirtualDom_noJavaScriptUri(url));
 };
 var $elm$html$Html$input = _VirtualDom_node('input');
-var $author$project$Tab2$listToString = function (arr) {
-	if (!arr.b) {
-		return '';
-	} else {
-		var x = arr.a;
-		var xs = arr.b;
-		return _Utils_eq(xs, _List_Nil) ? $elm$core$String$fromInt(x) : ($elm$core$String$fromInt(x) + (', ' + $author$project$Tab2$listToString(xs)));
-	}
-};
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -5439,7 +5691,10 @@ var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProp
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
 var $author$project$Tab2$view = function (model) {
 	var size = model.size;
+	var mergeUnit2 = model.mergeUnit2;
+	var mergeUnit1 = model.mergeUnit1;
 	var mergeContent2 = '--,--';
+	var j = model.j;
 	var i = model.i;
 	var array = model.array;
 	var change = (_Utils_cmp(
@@ -5636,6 +5891,19 @@ var $author$project$Tab2$view = function (model) {
 							]),
 						_List_fromArray(
 							[
+								$elm$html$Html$text(
+								'J: ' + $elm$core$String$fromInt(j))
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+								A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+								A2($elm$html$Html$Attributes$style, 'align-items', 'center')
+							]),
+						_List_fromArray(
+							[
 								A2(
 								$elm$html$Html$div,
 								_List_fromArray(
@@ -5685,9 +5953,203 @@ var $author$project$Tab2$view = function (model) {
 							]),
 						_List_fromArray(
 							[
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+										A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+										A2($elm$html$Html$Attributes$style, 'align-items', 'center')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Merge Unit 1: ')
+									])),
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+										A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+										A2($elm$html$Html$Attributes$style, 'align-items', 'center')
+									]),
+								$author$project$Tab2$display_nocolor(mergeUnit1))
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+								A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+								A2($elm$html$Html$Attributes$style, 'align-items', 'center')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+										A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+										A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
+										A2($elm$html$Html$Attributes$style, 'margin-bottom', '20px')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick($author$project$Tab2$Sort1)
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Sort MergeUnit 1')
+											]))
+									])),
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+										A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+										A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
+										A2($elm$html$Html$Attributes$style, 'margin-bottom', '20px')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick($author$project$Tab2$Merge1)
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Merge MergeUnit 1')
+											]))
+									]))
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+								A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+								A2($elm$html$Html$Attributes$style, 'align-items', 'center')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+										A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+										A2($elm$html$Html$Attributes$style, 'align-items', 'center')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Merge Unit 2: ')
+									])),
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+										A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+										A2($elm$html$Html$Attributes$style, 'align-items', 'center')
+									]),
+								$author$project$Tab2$display_nocolor(mergeUnit2))
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+								A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+								A2($elm$html$Html$Attributes$style, 'align-items', 'center')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+										A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+										A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
+										A2($elm$html$Html$Attributes$style, 'margin-bottom', '20px')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick($author$project$Tab2$Sort2)
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Sort MergeUnit 2')
+											]))
+									])),
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+										A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+										A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
+										A2($elm$html$Html$Attributes$style, 'margin-bottom', '20px')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick($author$project$Tab2$Merge2)
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Merge MergeUnit 2')
+											]))
+									]))
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+								A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+								A2($elm$html$Html$Attributes$style, 'align-items', 'center')
+							]),
+						_List_fromArray(
+							[
 								$elm$html$Html$text(change)
 							]))
-					]))
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+						A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+						A2($elm$html$Html$Attributes$style, 'align-items', 'center')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Trajectory: ')
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+						A2($elm$html$Html$Attributes$style, 'align-items', 'center')
+					]),
+				$author$project$Tab2$display_nocolor_string(model.trajectory))
 			]));
 };
 var $author$project$Tab2$main = $elm$browser$Browser$sandbox(
